@@ -221,6 +221,8 @@ class Puzzles {
     // number of fallen_puzzle;
     int fallen_puzzle = 0;
 
+    int test_puzzle_idx =0;
+
     GameState parent_gs;
 
     IntList fallen_puzzles;
@@ -248,6 +250,7 @@ class Puzzles {
     }
     
     Puzzles(GameState parent_gs, String jpg_file_path) {
+        this.test_puzzle_idx=0;
         this.parent_gs = parent_gs;
 
         this.load_image(jpg_file_path);
@@ -272,6 +275,7 @@ class Puzzles {
             this.shuffled_puzzle_order[i+2] = temp_to_shuffle.get(2);
             this.shuffled_puzzle_order[i+3] = temp_to_shuffle.get(3);
         }
+
 
         this.fallen_puzzles = new IntList();
         this.current_puzzle = 0;
@@ -304,7 +308,8 @@ class Puzzles {
 
     void fall_init_puzzle(){
         // current_puzzle is a [0..16] look up from shuffled_puzzle_order
-        this.current_puzzle = 0;
+        // this.current_puzzle = 0;
+        this.set_active_puzzle(this.shuffled_puzzle_order[this.test_puzzle_idx]);
         this.get_active_puzzle().state = PUZZLE_FALLING;
     }
 
@@ -312,13 +317,15 @@ class Puzzles {
         print("fall_next_puzzle");
 
         if (this.fallen_puzzle < (puzzle_array.length -1)) {
-            this.current_puzzle = this.current_puzzle + 1;
             this.fallen_puzzle = this.fallen_puzzle + 1;
+            
+            // this.current_puzzle = this.current_puzzle + 1;
+            this.test_puzzle_idx = this.test_puzzle_idx + 1;
+            this.set_active_puzzle(this.shuffled_puzzle_order[this.test_puzzle_idx]);
             gs.puzzles.get_active_puzzle().state = PUZZLE_FALLING;  
         }else{
             println("all puzzle fallen");
         }
-        
     }
 
     void inc_lane_puzzle_count(int lane){
@@ -339,6 +346,10 @@ class Puzzles {
             println("all puzzle falled");
             this.parent_gs.show_result();
         }
+    }
+
+    void set_active_puzzle(int active_puzzle){
+        this.current_puzzle = active_puzzle;
     }
 
     Puzzle get_active_puzzle(){
