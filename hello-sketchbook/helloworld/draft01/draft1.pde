@@ -176,9 +176,7 @@ class Puzzles {
                 puzzle_idx = puzzle_order[i];
                 println(puzzle_idx);
                 i = i + 1;
-
                 this.sliced_img[puzzle_idx] = this.img.get(x_ruler[x], y_ruler[y], x_div, y_div);
-                puzzle_idx = puzzle_idx + 1;
             }
         }
     }
