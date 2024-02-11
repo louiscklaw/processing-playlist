@@ -13,9 +13,13 @@ int start_pos_y;
 int[] puzzle_lanes_x;
 int puzzle_current_lane;
 int[] lane_puzzle_count;
-int lane_bottom_y;
+int lane_bottom_y;w
 int puzzle_x;
 int puzzle_y;
+
+void constant{
+    int puzzle_ready = 0;
+}
 
 void setup() {
     size(800, 1000);
