@@ -68,7 +68,7 @@ class GameState {
     void start_game() {
         this.puzzles = new Puzzles(this, "./test_400_600.jpg");
         this.state = GAME_START;
-        this.puzzles.get_active_puzzle().state = PUZZLE_FALLING;
+        this.puzzles.fall_init_puzzle();
     }
     
     void reset_game() {
@@ -202,7 +202,7 @@ class Puzzles {
     Puzzle[] puzzle_array = new Puzzle[16];
     int[] puzzle_order = new int[]{12,13,14,15,8,9,10,11,4,5,6,7,0,1,2,3};
 
-    // ArrayList<Puzzle> scrambled_puzzle_array = new ArrayList<Puzzle>();
+    // ArrayList<Puzzle> shuffled_puzzle_array = new ArrayList<Puzzle>();
     IntList temp_to_shuffle = new IntList();
     int[] shuffled_puzzle_order = new int[16];
 
@@ -213,8 +213,12 @@ class Puzzles {
     int x_div = 400 / 4;
     int y_div = 600 / 4;
     int lane_puzzle_count[] = new int[]{0,0,0,0};
+
+    // idx of falling puzzle
     int current_puzzle = 0;
     int landed_puzzle = 0;
+
+    // number of fallen_puzzle;
     int fallen_puzzle = 0;
 
     GameState parent_gs;
@@ -296,6 +300,12 @@ class Puzzles {
         }
     }
 
+    void fall_init_puzzle(){
+        // current_puzzle is a [0..16] look up from shuffled_puzzle_order
+        this.current_puzzle = 0;
+        this.get_active_puzzle().state = PUZZLE_FALLING;
+    }
+
     void fall_next_puzzle(){
         print("fall_next_puzzle");
 
@@ -346,9 +356,6 @@ class Puzzles {
     void helloworld(){
         println("puzzles hellworold");
     }
-}
-
-class Display {
 }
 
 void keyPressed() {
