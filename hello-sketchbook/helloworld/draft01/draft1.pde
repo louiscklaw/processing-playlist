@@ -55,7 +55,9 @@ class GameState {
     Puzzles puzzles;
     //tiny state machine 
     int state;
-    
+    int final_marks;
+    int each_correct_earn = 100/16;
+
     GameState(int init_state) {  
         state = init_state;
     }
@@ -83,7 +85,15 @@ class GameState {
     void show_result(){
         this.state = GAME_SHOW_RESULT;
         print("game show result");
-
+        
+        for (int i =0; i < 16; i++){
+            println("--- ---");
+            println(this.puzzles.puzzle_array[i].puzzle_correct_place);
+            println(this.puzzles.puzzle_array[i].puzzle_user_placed);
+            if (this.puzzles.puzzle_array[i].puzzle_correct_place == this.puzzles.puzzle_array[i].puzzle_user_placed){
+                final_marks = final_marks+each_correct_earn;
+            }
+        }
     }
 
     void redraw(){
@@ -97,9 +107,10 @@ class GameState {
 
         if (this.state == GAME_SHOW_RESULT){
             DrawGameEnded();
-        }
 
-        DrawMarks(100);
+            // CalcUserMarks();
+            DrawMarks(this.final_marks);
+        }
     }
 }
 
@@ -139,8 +150,10 @@ class Puzzle {
     int state;
     int show;
     Puzzles parent_puzzles;
-    
-    Puzzle(Puzzles puzzles, PImage puzzle_img, int init_pos_x, int init_pos_y) {
+    int puzzle_correct_place;
+    int puzzle_user_placed;
+
+    Puzzle(Puzzles puzzles, PImage puzzle_img, int init_pos_x, int init_pos_y, int correct_place) {
         this.current_x = 99;
         this.current_y = 99;
         this.p_img = puzzle_img;
@@ -150,6 +163,7 @@ class Puzzle {
         this.lane_puzzle_count = 0;
         this.parent_puzzles = puzzles;
         this.show = HIDE_PUZZLE;
+        this.puzzle_correct_place = correct_place;
     }
 
     int get_puzzle_lane_bottom(int lane_puzzle_count){
@@ -174,6 +188,12 @@ class Puzzle {
             this.parent_puzzles.puzzle_landed(this.current_lane);
             // this.parent_puzzles.inc_lane_puzzle_count(this.current_lane);
             this.state = PUZZLE_IGNORE;
+
+            // calculate the user placed puzzle
+            this.puzzle_user_placed = lookup_user_puzzle_position(
+                this.current_lane, this.pos_y);
+            println(this.puzzle_user_placed);
+            
         }
         else if (this.state == PUZZLE_IGNORE){
             // lock puzzle
@@ -258,7 +278,7 @@ class Puzzles {
         for (int i = 0; i<16;i++){
             // puzzle with the correct slice order
             // puzzle_array <-- this is the correct order , from bottom left hand corner 0 
-            this.puzzle_array[i] = new Puzzle(this, sliced_img[i], 1, 1);
+            this.puzzle_array[i] = new Puzzle(this, sliced_img[i], 1, 1, i);
         }
 
         for (int i = 0; i<16;i=i+4){
@@ -318,7 +338,7 @@ class Puzzles {
 
         if (this.fallen_puzzle < (puzzle_array.length -1)) {
             this.fallen_puzzle = this.fallen_puzzle + 1;
-            
+
             // this.current_puzzle = this.current_puzzle + 1;
             this.test_puzzle_idx = this.test_puzzle_idx + 1;
             this.set_active_puzzle(this.shuffled_puzzle_order[this.test_puzzle_idx]);
@@ -368,6 +388,28 @@ class Puzzles {
     void helloworld(){
         println("puzzles hellworold");
     }
+}
+
+int lookup_user_puzzle_position(int lane, int pos_y){
+    int[] tmp_list = new int[]{0,0,0,0};
+
+    switch (pos_y) {
+        case 750:
+            tmp_list = new int[]{0,1,2,3};
+            return tmp_list[lane];
+        case 600:
+            tmp_list = new int[]{4,5,6,7};
+            return tmp_list[lane];
+        case 450:
+            tmp_list = new int[]{8,9,10,11};
+            return tmp_list[lane];
+        case 300:
+            tmp_list = new int[]{12,13,14,15};
+            return tmp_list[lane];
+        default:
+            tmp_list = new int[]{-1,-1,-1,-1};
+            return tmp_list[lane];
+        }
 }
 
 void keyPressed() {
