@@ -299,8 +299,9 @@ class Puzzles {
     void fall_next_puzzle(){
         print("fall_next_puzzle");
 
-        if (this.current_puzzle < (puzzle_array.length -1)) {
+        if (this.fallen_puzzle < (puzzle_array.length -1)) {
             this.current_puzzle = this.current_puzzle + 1;
+            this.fallen_puzzle = this.fallen_puzzle + 1;
             gs.puzzles.get_active_puzzle().state = PUZZLE_FALLING;  
         }else{
             println("all puzzle fallen");
