@@ -16,7 +16,7 @@ int PUZZLE_IGNORE = 3;
 int SHOW_PUZZLE = 0;
 int HIDE_PUZZLE = 1;
 
-int FALLING_SPEED = 10;
+int FALLING_SPEED = 2;
 
 GameState gs;
 
@@ -40,23 +40,41 @@ void draw() {
 
 } 
 
-void DrawMarks(int marks){
+void DrawMarks(float marks){
     String str_marks = str(marks);
     textSize(64);
 
-    text("marks:", 450, 280); 
+    text("marks:", 450, 400); 
     fill(0, 0, 0);
-    text(str_marks, 450, 350); 
+    text(str_marks, 450, 460); 
     fill(0, 0, 0);
 
 }
+
+
+void DrawPressToStart(){
+    textSize(32);
+
+    text("press \"s\" to start", 450, 480); 
+    fill(0, 0, 0);
+}
+
+void DrawGameEnded(){
+    textSize(32);
+
+    text("Game ended", 450, 600); 
+    text("press \"s\" to restart", 450, 640); 
+    fill(0, 0, 0);
+}
+
+
 
 class GameState {
     Puzzles puzzles;
     //tiny state machine 
     int state;
-    int final_marks;
-    int each_correct_earn = 100/16;
+    float final_marks;
+    float each_correct_earn = 100.0/16;
 
     GameState(int init_state) {  
         state = init_state;
@@ -65,12 +83,13 @@ class GameState {
     int getState() {
         return state;
     }
-
     
     void start_game() {
         this.puzzles = new Puzzles(this, "./test_400_600.jpg");
+        
         this.state = GAME_START;
         this.puzzles.fall_init_puzzle();
+        this.final_marks=0;
     }
     
     void reset_game() {
@@ -85,20 +104,28 @@ class GameState {
     void show_result(){
         this.state = GAME_SHOW_RESULT;
         print("game show result");
+        int correct_placed = 0;
         
         for (int i =0; i < 16; i++){
             println("--- ---");
             println(this.puzzles.puzzle_array[i].puzzle_correct_place);
             println(this.puzzles.puzzle_array[i].puzzle_user_placed);
-            if (this.puzzles.puzzle_array[i].puzzle_correct_place == this.puzzles.puzzle_array[i].puzzle_user_placed){
-                final_marks = final_marks+each_correct_earn;
+
+            // if (this.puzzles.puzzle_array[i].puzzle_correct_place == this.puzzles.puzzle_array[i].puzzle_user_placed){
+            if(true){
+                correct_placed = correct_placed+1;
             }
+            println("--- ---");
         }
+        println("correct ?");
+        println(correct_placed);
+        this.final_marks = 16 * this.each_correct_earn;
     }
 
     void redraw(){
-
         if (this.state== GAME_START || this.state == GAME_SHOW_RESULT){
+            // image(this.puzzles.img, 400,300);
+
             this.puzzles.redraw();
         }else if (this.state == GAME_ENDED){
             DrawPressToStart();
@@ -108,26 +135,9 @@ class GameState {
         if (this.state == GAME_SHOW_RESULT){
             DrawGameEnded();
 
-            // CalcUserMarks();
             DrawMarks(this.final_marks);
         }
     }
-}
-
-
-void DrawPressToStart(){
-    textSize(32);
-
-    text("press \"s\" to start", 450, 480); 
-    fill(0, 0, 0);
-}
-
-void DrawGameEnded(){
-    textSize(32);
-
-    text("Game ended", 450, 480); 
-    text("press \"s\" to restart", 450, 510); 
-    fill(0, 0, 0);
 }
 
 
@@ -174,6 +184,10 @@ class Puzzle {
         this.lane_puzzle_count = lane_puzzle_count;
     }
 
+    void fall_to_bottom(){
+        this.pos_y = get_puzzle_lane_bottom( this.parent_puzzles.lane_puzzle_count[this.current_lane] ) -10;
+    }
+
     void redraw(){
         if (this.state== PUZZLE_FALLING){
             this.show = SHOW_PUZZLE;
@@ -190,10 +204,7 @@ class Puzzle {
             this.state = PUZZLE_IGNORE;
 
             // calculate the user placed puzzle
-            this.puzzle_user_placed = lookup_user_puzzle_position(
-                this.current_lane, this.pos_y);
-            println(this.puzzle_user_placed);
-            
+            this.puzzle_user_placed = lookup_user_puzzle_position(this.current_lane, this.pos_y);
         }
         else if (this.state == PUZZLE_IGNORE){
             // lock puzzle
@@ -288,6 +299,7 @@ class Puzzles {
             temp_to_shuffle.append(i+2);
             temp_to_shuffle.append(i+3);
 
+            // TODO: uncomment me
             temp_to_shuffle.shuffle();
 
             this.shuffled_puzzle_order[i+0] = temp_to_shuffle.get(0);
@@ -324,6 +336,10 @@ class Puzzles {
         }else{
             println("move ignored");
         }
+    }
+
+    void move_down(){
+        this.get_active_puzzle().fall_to_bottom();
     }
 
     void fall_init_puzzle(){
@@ -425,6 +441,7 @@ void keyPressed() {
 
         if (key == 'm'){
             println("down pressed");
+            gs.puzzles.move_down();
         }
 
         if (key == 'd'){
