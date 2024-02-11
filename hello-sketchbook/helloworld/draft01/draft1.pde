@@ -240,8 +240,9 @@ class Puzzles {
         for (int y = 0; y < 4; y++) {
             for (int x = 0; x < 4; x++)  {
                 puzzle_idx = puzzle_order[i];
-                i = i + 1;
+                // puzzle_order <-- this is the correct order , from bottom left hand corner 0 
                 this.sliced_img[puzzle_idx] = this.img.get(x_ruler[x], y_ruler[y], x_div, y_div);
+                i = i + 1;
             }
         }
     }
@@ -253,6 +254,7 @@ class Puzzles {
         this.slice();
         for (int i = 0; i<16;i++){
             // puzzle with the correct slice order
+            // puzzle_array <-- this is the correct order , from bottom left hand corner 0 
             this.puzzle_array[i] = new Puzzle(this, sliced_img[i], 1, 1);
         }
 
@@ -329,8 +331,7 @@ class Puzzles {
         this.fallen_puzzles.append(this.current_puzzle);
             
         // fallback to 16
-        
-        if (this.fallen_puzzles.size() < 3){
+        if (this.fallen_puzzles.size() < 16){
         // if (this.fallen_puzzles.size() < this.puzzle_array.length){
             gs.puzzles.fall_next_puzzle();
 
