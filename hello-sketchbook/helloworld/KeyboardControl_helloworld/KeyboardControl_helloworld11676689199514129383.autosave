@@ -1,0 +1,73 @@
+int key_pressed;
+PImage img;
+PImage small_img;
+
+int canvas_width;
+int canvas_height;
+int puzzle_height;
+int puzzle_width;
+
+void setup() {
+    size(800, 1000);
+    canvas_height = 1000;
+    canvas_width = 800;
+
+    img = loadImage("./test_400_600.jpg");
+    
+    int temp_y = convert_to_canvas_y(700);
+    puzzle_width =100;
+    puzzle_height = 600/4;
+    small_img = img.get(0 ,0 ,puzzle_width ,puzzle_height );
+
+    key_pressed = 0;
+    
+    frameRate(30);
+}
+
+
+
+void draw(){
+    background(204);
+
+
+      
+        pos_y =pos_y -1;
+    }
+
+    int pos_y = convert_to_canvas_y(1000);
+    int pos_x = 100;
+
+    image(small_img, pos_x, pos_y);
+}
+
+
+int convert_to_canvas_y(int bottom_zero_coord){
+    int temp;
+    temp = canvas_height - bottom_zero_coord;
+    return temp;
+}
+
+
+
+void keyPressed() {
+    if (key_pressed == 0){
+
+        if (key == 'j'){
+            println("left pressed");
+       }
+
+        if (key == 'k'){
+            println("right pressed");
+        }
+
+        if (key == 'm'){
+            println("down pressed");
+        }
+
+        key_pressed = 1;
+    }
+}
+
+void keyReleased(){
+    key_pressed = 0;
+}
