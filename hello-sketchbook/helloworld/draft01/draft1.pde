@@ -89,7 +89,8 @@ class GameState {
         
         this.state = GAME_START;
         this.puzzles.fall_init_puzzle();
-        this.final_marks=0;
+        this.final_marks=0.0;
+        println("reset marks");
     }
     
     void reset_game() {
@@ -111,15 +112,14 @@ class GameState {
             println(this.puzzles.puzzle_array[i].puzzle_correct_place);
             println(this.puzzles.puzzle_array[i].puzzle_user_placed);
 
-            // if (this.puzzles.puzzle_array[i].puzzle_correct_place == this.puzzles.puzzle_array[i].puzzle_user_placed){
-            if(true){
+            if (this.puzzles.puzzle_array[i].puzzle_correct_place == this.puzzles.puzzle_array[i].puzzle_user_placed){
                 correct_placed = correct_placed+1;
             }
             println("--- ---");
         }
         println("correct ?");
         println(correct_placed);
-        this.final_marks = 16 * this.each_correct_earn;
+        this.final_marks = correct_placed * this.each_correct_earn;
     }
 
     void redraw(){
@@ -135,6 +135,8 @@ class GameState {
         if (this.state == GAME_SHOW_RESULT){
             DrawGameEnded();
 
+            println("draw marks");
+            println(this.final_marks);
             DrawMarks(this.final_marks);
         }
     }
